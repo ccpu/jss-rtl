@@ -59,27 +59,27 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
 
       return convert(typeof rule.toJSON === 'function' ? rule.toJSON() : style);
     },
-    // onUpdate(data: object, rule: any, sheet?: any, options?: any) {
-    //   getRuleFunctions(rule).forEach((fnValues) => {
-    //     let flip = shouldFlip(sheet, rule.style, opt, true);
+    onUpdate(data: object, rule: any, sheet?: any, options?: any) {
+      getRuleFunctions(rule).forEach((fnValues) => {
+        let flip = shouldFlip(sheet, rule.style, opt, true);
 
-    //     if (enabled && flip && fnValues) {
-    //       for (var _prop in fnValues) {
-    //         const value = fnValues[_prop](data);
+        if (enabled && flip && fnValues) {
+          for (var _prop in fnValues) {
+            const value = fnValues[_prop](data);
 
-    //         const rtlStyle = convert({ [_prop]: value });
+            const rtlStyle = convert({ [_prop]: value });
 
-    //         const convertedRule = Object.keys(rtlStyle)[0];
+            const convertedRule = Object.keys(rtlStyle)[0];
 
-    //         if (convertedRule !== _prop) {
-    //           rule.prop(_prop, null, options);
-    //         }
+            if (convertedRule !== _prop) {
+              rule.prop(_prop, null, options);
+            }
 
-    //         rule.prop(convertedRule, value, options);
-    //       }
-    //     }
-    //   });
-    // },
+            rule.prop(convertedRule, value, options);
+          }
+        }
+      });
+    },
   };
   // onChangeValue(value: any, prop: any, rule: any) {
   //   if (prop === 'marginRight' || prop === 'margin-right') {

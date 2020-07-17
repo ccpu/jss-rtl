@@ -38,7 +38,9 @@
     "@types/node": "^12.7.5",
     "chai": "^4.2.0",
     "jss": "^10.3.0",
-    "jss-preset-default": "^10.0.0",
+    "jss-plugin-global": "^10.3.0",
+    "jss-plugin-nested": "^10.3.0",
+    "jss-plugin-rule-value-function": "^10.3.0",
     "mocha": "^8.0.1",
     "rimraf": "^3.0.0",
     "ts-loader": "^6.1.2",
@@ -46,10 +48,7 @@
     "tslint": "^5.20.0",
     "tslint-eslint-rules": "^5.4.0",
     "tslint-microsoft-contrib": "^6.2.0",
-    "typescript": "^3.6.3",
-    "jss-plugin-global": "^10.3.0",
-    "jss-plugin-nested": "^10.3.0",
-    "jss-plugin-rule-value-function": "^10.3.0"
+    "typescript": "^3.6.3"
   },
   "peerDependencies": {
     "jss": "^10.3.0"
