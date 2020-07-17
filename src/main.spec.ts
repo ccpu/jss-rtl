@@ -4,9 +4,6 @@ import jssFunc from 'jss-plugin-rule-value-function';
 import { create, sheets } from 'jss';
 import jssNested from 'jss-plugin-nested';
 import jssGlobal from 'jss-plugin-global';
-// import {} from 'jss-preset-default';
-
-// const jssPresetDefault = require('jss-preset-default').default;
 
 describe('jss-rtl', () => {
   let jss: any;
@@ -307,17 +304,17 @@ describe('jss-rtl', () => {
       expect(style).to.be.equals('.a-1-25-1 {  marginLeft: 10;  left: 10;}');
     });
 
-    // it('should work on nested', () => {
-    //   const sheet = jss.createStyleSheet({
-    //     a: {
-    //       '&:hover': {
-    //         marginLeft: (p: any) => p.marginLeft,
-    //       },
-    //     },
-    //   });
-    //   sheet.update({ marginLeft: 20 });
-    //   const style = sheet.toString().split('\n').join('');
-    //   expect(style).to.be.equals('.a-1-26-1:hover {  marginRight: 20;}');
-    // });
+    it('should work on nested', () => {
+      const sheet = jss.createStyleSheet({
+        a: {
+          '&:hover': {
+            marginLeft: (p: any) => p.marginLeft,
+          },
+        },
+      });
+      sheet.update({ marginLeft: 20 });
+      const style = sheet.toString().split('\n').join('');
+      expect(style).to.be.equals('.a-1-26-1:hover {  marginRight: 20;}');
+    });
   });
 });

@@ -81,21 +81,4 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
       });
     },
   };
-  // onChangeValue(value: any, prop: any, rule: any) {
-  //   if (prop === 'marginRight' || prop === 'margin-right') {
-  //     return value;
-  //   }
-
-  //   if (rule.__flip) {
-  //     const styles = convert({ [prop]: value });
-  //     const key = Object.keys(styles)[0];
-  //     if (key !== prop) {
-  //       rule.prop(key, value, { process: false });
-  //     }
-  //     delete rule.__flip;
-  //     return false;
-  //   }
-
-  //   return value;
-  // },
 }

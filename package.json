@@ -1,17 +1,24 @@
 {
-  "name": "jss-rtl",
+  "name": "jss-rtl-v2",
   "description": "Flip styles using rtl-css-js",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Ali Taheri Moghaddar",
     "email": "ali.taheri.m@gmail.com"
   },
+  "contributors": [
+    {
+      "name": "Mo Doaie",
+      "email": "m.doaie@yahoo.co.uk",
+      "url": "https://github.com/ccpu"
+    }
+  ],
   "files": [
     "lib"
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:alitaheri/jss-rtl.git"
+    "url": "git@github.com:ccpu/jss-rtl-v2.git"
   },
   "keywords": [
     "cssinjs",
@@ -54,6 +61,6 @@
     "jss": "^10.3.0"
   },
   "dependencies": {
-    "rtl-css-js": "^1.13.1"
+    "rtl-css-js": "^1.14.0"
   }
 }
