@@ -1,5 +1,5 @@
 {
-  "name": "jss-rtl-v2",
+  "name": "jss-rtl-mui",
   "description": "Flip styles using rtl-css-js",
   "version": "0.4.0",
   "author": {
@@ -10,7 +10,7 @@
     {
       "name": "Mo Doaie",
       "email": "m.doaie@yahoo.co.uk",
-      "url": "https://github.com/ccpu"
+      "url": "git@github.com:ccpu/jss-rtl-mui.git"
     }
   ],
   "files": [
@@ -61,6 +61,9 @@
     "jss": "^10.3.0"
   },
   "dependencies": {
-    "rtl-css-js": "^1.14.0"
+    "jss-plugin-camel-case": "^10.3.0",
+    "jss-plugin-vendor-prefixer": "^10.3.0",
+    "rtl-css-js": "^1.14.0",
+    "tiny-warning": "^1.0.3"
   }
 }

@@ -1,20 +1,32 @@
 import { expect } from 'chai';
 import rtl from './main';
-import jssFunc from 'jss-plugin-rule-value-function';
 import { create, sheets } from 'jss';
-import jssNested from 'jss-plugin-nested';
-import jssGlobal from 'jss-plugin-global';
+import functions from 'jss-plugin-rule-value-function';
+import global from 'jss-plugin-global';
+import nested from 'jss-plugin-nested';
+import camelCase from 'jss-plugin-camel-case';
 
 describe('jss-rtl', () => {
   let jss: any;
 
+  let orgConsoleError: any;
+  let consoleErrorMsg: string | undefined;
+  process.env.NODE_ENV = 'development';
   beforeEach(() => {
-    jss = create({ plugins: [jssFunc(), jssGlobal(), jssNested(), rtl()] });
+    jss = create({
+      plugins: [functions(), global(), nested(), camelCase(), rtl()],
+    });
+    orgConsoleError = console.error;
+    console.error = (msg: string) => {
+      consoleErrorMsg = msg;
+    };
   });
 
   afterEach(() => {
     (sheets as any).registry.forEach((sheet: any) => sheet.detach());
     sheets.reset();
+    consoleErrorMsg = undefined;
+    console.error = orgConsoleError;
   });
 
   describe('simple usage', () => {
@@ -30,7 +42,7 @@ describe('jss-rtl', () => {
 
     it('should generate correct CSS', () => {
       expect(sheet.toString()).to.be.equals(
-        ['.a-1-2-1 {', '  padding-right: 1px;', '}'].join('\n'),
+        ['.a-0-2-1 {', '  padding-right: 1px;', '}'].join('\n'),
       );
     });
   });
@@ -49,14 +61,14 @@ describe('jss-rtl', () => {
 
     it('should generate unchanged CSS', () => {
       expect(sheet.toString()).to.be.equals(
-        ['.a-1-6-1 {', '  padding-left: 1px;', '}'].join('\n'),
+        ['.a-0-6-1 {', '  padding-left: 1px;', '}'].join('\n'),
       );
     });
 
     it('should remove the flip property from the style even when disabled', () => {
       sheet = jss.createStyleSheet({ a: { flip: true, 'padding-left': '1px' } });
       expect(sheet.toString()).to.be.equals(
-        ['.a-1-8-2 {', '  padding-left: 1px;', '}'].join('\n'),
+        ['.a-0-8-2 {', '  padding-left: 1px;', '}'].join('\n'),
       );
     });
   });
@@ -74,7 +86,7 @@ describe('jss-rtl', () => {
 
     it('should generate unchanged CSS', () => {
       expect(sheet.toString()).to.be.equals(
-        ['.a-1-10-1 {', '  padding-left: 1px;', '}'].join('\n'),
+        ['.a-0-10-1 {', '  padding-left: 1px;', '}'].join('\n'),
       );
     });
   });
@@ -97,10 +109,10 @@ describe('jss-rtl', () => {
     it('should generate unchanged CSS and remove the flip prop', () => {
       expect(sheet.toString()).to.be.equals(
         [
-          '.a-1-12-1 {',
+          '.a-0-12-1 {',
           '  padding-right: 1px;',
           '}',
-          '.b-1-12-2 {',
+          '.b-0-12-2 {',
           '  padding-left: 1px;',
           '}',
         ].join('\n'),
@@ -127,10 +139,10 @@ describe('jss-rtl', () => {
     it('should generate changed CSS and remove the flip prop', () => {
       expect(sheet.toString()).to.be.equals(
         [
-          '.a-1-16-1 {',
+          '.a-0-16-1 {',
           '  padding-left: 1px;',
           '}',
-          '.b-1-16-2 {',
+          '.b-0-16-2 {',
           '  padding-right: 1px;',
           '}',
         ].join('\n'),
@@ -245,12 +257,12 @@ describe('jss-rtl', () => {
           'body-no-flip {',
           '  padding: 1 2 3 4;',
           '}',
-          '.button-1-21-1 {',
+          '.button-0-21-1 {',
           '  padding: 1, 4 3, 2,;',
           '  margin: 1 4 3 2 !important;',
           '  border: 1 solid red, 2 solid blue;',
           '}',
-          '.button-no-flip-1-21-2 {',
+          '.button-no-flip-0-21-2 {',
           '  padding: 1, 2, 3, 4;',
           '  margin: 1 2 3 4 !important;',
           '  border: 1 solid red, 2 solid blue;',
@@ -267,16 +279,31 @@ describe('jss-rtl', () => {
       });
       sheet.update({ marginLeft: 10 });
       const style = sheet.toString().split('\n').join('');
-      expect(style).to.be.equals('.a-1-22-1 {  marginRight: 10;}');
+      expect(style).to.be.equals('.a-0-22-1 {  margin-right: 10;}');
     });
 
-    it('should not flip rule with function', () => {
+    it('should flip rule and display error message that flip has no effect', () => {
       const sheet = jss.createStyleSheet({
         a: { marginLeft: (p: any) => p.marginLeft, flip: false },
       });
       sheet.update({ marginLeft: 10 });
+
       const style = sheet.toString().split('\n').join('');
-      expect(style).to.be.equals('.a-1-23-1 {  marginLeft: 10;}');
+
+      expect(style).to.be.equals('.a-0-23-1 {  margin-right: 10;}');
+
+      expect(consoleErrorMsg).to.be.equals(
+        `[JSS-RTL-MUI] 'flip' option has no effect on the dynamic rules, to use 'flip' option with dynamic rules you must wrap the rules in a single function (JSS Function rules).`,
+      );
+    });
+
+    it('should handle multiple functions', () => {
+      const sheet = jss.createStyleSheet({
+        a: { marginLeft: (p: any) => p.marginLeft, left: (p: any) => p.left },
+      });
+      sheet.update({ marginLeft: 10, left: 20 });
+      const style = sheet.toString().split('\n').join('');
+      expect(style).to.be.equals('.a-0-24-1 {  margin-right: 10;  right: 20;}');
     });
 
     it('should flip function rules', () => {
@@ -288,20 +315,20 @@ describe('jss-rtl', () => {
       });
       sheet.update({ marginLeft: 10 });
       const style = sheet.toString().split('\n').join('');
-      expect(style).to.be.equals('.a-1-24-1 {  marginRight: 10;  right: 10;}');
+      expect(style).to.be.equals('.a-0-25-1 {  margin-right: 10;  right: 10;}');
     });
 
-    it('should not flip function rules', () => {
+    it('should not flip multiple functions', () => {
       const sheet = jss.createStyleSheet({
         a: (p: any) => ({
           flip: false,
           marginLeft: p.marginLeft,
-          left: 10,
+          left: p.left,
         }),
       });
-      sheet.update({ marginLeft: 10 });
+      sheet.update({ marginLeft: 10, left: 20 });
       const style = sheet.toString().split('\n').join('');
-      expect(style).to.be.equals('.a-1-25-1 {  marginLeft: 10;  left: 10;}');
+      expect(style).to.be.equals('.a-0-26-1 {  margin-left: 10;  left: 20;}');
     });
 
     it('should work on nested', () => {
@@ -314,7 +341,23 @@ describe('jss-rtl', () => {
       });
       sheet.update({ marginLeft: 20 });
       const style = sheet.toString().split('\n').join('');
-      expect(style).to.be.equals('.a-1-26-1:hover {  marginRight: 20;}');
+      expect(style).to.be.equals('.a-0-27-1:hover {  margin-right: 20;}');
+    });
+
+    it('should work with global style', () => {
+      const sheet = jss.createStyleSheet({
+        '@global': {
+          body: {
+            marginLeft: (p: any) => p.marginLeft,
+          },
+          a: (p: any) => ({
+            marginLeft: p.marginLeft,
+          }),
+        },
+      });
+      sheet.update({ marginLeft: 20 });
+      const style = sheet.toString().split('\n').join('');
+      expect(style).to.be.equals('body {  margin-right: 20;}a {  margin-right: 20;}');
     });
   });
 });

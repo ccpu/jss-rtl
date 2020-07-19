@@ -7,19 +7,25 @@ export interface JssRTLOptions {
   opt?: 'in' | 'out';
 }
 
-const getRuleFunctions = (rule: any) => {
-  return Object.keys(rule).reduce((funcs, key) => {
-    if (key.startsWith('fnValues')) {
-      var fnValues = rule[key];
-      if (Object.keys(fnValues).length !== 0) {
-        funcs.push(fnValues);
-      }
-    }
-    return funcs;
-  }, [] as any[]);
+const getFuncKey = (rule: any, funcName: string) => {
+  const key = Object.keys(rule).find((key) => key.startsWith(funcName));
+
+  if (key && (Object.keys(rule[key]).length !== 0 || typeof rule[key] === 'function')) {
+    return key;
+  }
+
+  return undefined;
 };
 
-const shouldFlip = (sheet: any, style: any, opt = 'out', removeFlipRule = false) => {
+const getFunctionValueKey = (rule: any) => {
+  return getFuncKey(rule, 'fnValues');
+};
+
+const getFunctionStyleKey = (rule: any) => {
+  return getFuncKey(rule, 'fnStyle');
+};
+
+const shouldFlip = (sheet: any, style: any, opt = 'out') => {
   let flip = opt === 'out'; // If it's set to opt-out, then it should flip by default
 
   if (typeof sheet.options.flip === 'boolean') {
@@ -29,9 +35,7 @@ const shouldFlip = (sheet: any, style: any, opt = 'out', removeFlipRule = false)
   if (typeof style.flip === 'boolean') {
     flip = style.flip;
 
-    if (removeFlipRule) {
-      delete style.flip;
-    }
+    delete style.flip;
   }
   return flip;
 };
@@ -51,7 +55,16 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
         return style;
       }
 
-      let flip = shouldFlip(sheet, style, opt, getRuleFunctions(rule).length === 0);
+      if (process.env.NODE_ENV === 'development') {
+        const funcKey = getFunctionValueKey(rule);
+        if (funcKey && typeof style.flip === 'boolean') {
+          console.error(
+            `[JSS-RTL-MUI] 'flip' option has no effect on the dynamic rules, to use 'flip' option with dynamic rules you must wrap the rules in a single function (JSS Function rules).`,
+          );
+        }
+      }
+
+      let flip = shouldFlip(sheet, style, opt);
 
       if (!flip) {
         return style;
@@ -60,25 +73,42 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
       return convert(typeof rule.toJSON === 'function' ? rule.toJSON() : style);
     },
     onUpdate(data: object, rule: any, sheet?: any, options?: any) {
-      getRuleFunctions(rule).forEach((fnValues) => {
-        let flip = shouldFlip(sheet, rule.style, opt, true);
+      const fnValuesKey = getFunctionValueKey(rule);
 
-        if (enabled && flip && fnValues) {
-          for (var _prop in fnValues) {
-            const value = fnValues[_prop](data);
+      const fnStyleKey = getFunctionStyleKey(rule);
 
-            const rtlStyle = convert({ [_prop]: value });
+      if (!enabled) return;
 
-            const convertedRule = Object.keys(rtlStyle)[0];
+      if (!fnValuesKey && !fnStyleKey) return;
 
-            if (convertedRule !== _prop) {
-              rule.prop(_prop, null, options);
-            }
+      if (fnValuesKey) {
+        const fnValues = rule[fnValuesKey];
+        let flip = shouldFlip(sheet, {}, opt);
 
-            rule.prop(convertedRule, value, options);
+        if (!flip) return;
+
+        for (var _prop in fnValues) {
+          const value = fnValues[_prop](data);
+
+          const rtlStyle = convert({ [_prop]: value });
+
+          const convertedRule = Object.keys(rtlStyle)[0];
+
+          if (convertedRule !== _prop) {
+            rule.prop(_prop, null, options);
           }
+
+          rule.prop(convertedRule, value, options);
         }
-      });
+      } else if (fnStyleKey) {
+        const style = rule[fnStyleKey](data);
+
+        let flip = shouldFlip(sheet, style, opt);
+
+        if (flip) {
+          rule.style = { ...style, flip };
+        }
+      }
     },
   };
 }
