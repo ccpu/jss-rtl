@@ -72,7 +72,7 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
 
       return convert(typeof rule.toJSON === 'function' ? rule.toJSON() : style);
     },
-    onUpdate(data: object, rule: any, sheet?: any, options?: any) {
+    onUpdate(data: object, rule: any, sheet?: any, _options?: any) {
       const fnValuesKey = getFunctionValueKey(rule);
 
       const fnStyleKey = getFunctionStyleKey(rule);
@@ -95,11 +95,11 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
           const convertedRule = Object.keys(rtlStyle)[0];
 
           if (convertedRule !== _prop) {
-            rule.prop(_prop, null, options);
+            rule.prop(_prop, null, { process: true });
+            rule.prop(convertedRule, value, { process: true });
           }
-
-          rule.prop(convertedRule, value, options);
         }
+        // rule.style = { ...rule.style, ...newStyle };
       } else if (fnStyleKey) {
         const style = rule[fnStyleKey](data);
 

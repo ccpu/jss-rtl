@@ -359,5 +359,21 @@ describe('jss-rtl', () => {
       const style = sheet.toString().split('\n').join('');
       expect(style).to.be.equals('body {  margin-right: 20;}a {  margin-right: 20;}');
     });
+
+    it('should handle multiple rule with function value', () => {
+      const sheet = jss.createStyleSheet({
+        ['standard']: {
+          '& input': {
+            marginLeft: (p: any) => p.valid && 6,
+            left: (p: any) => p.valid && 6,
+          },
+        },
+      });
+      sheet.update({ valid: true });
+      const style = sheet.toString().split('\n').join('');
+      expect(style).to.be.equals(
+        '.standard-0-29-1 input {  margin-right: 6;  right: 6;}',
+      );
+    });
   });
 });
