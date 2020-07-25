@@ -87,15 +87,15 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
 
         if (!flip) return;
 
-        for (var _prop in fnValues) {
-          const value = fnValues[_prop](data);
+        for (var prop in fnValues) {
+          const value = fnValues[prop](data);
 
-          const rtlStyle = convert({ [_prop]: value });
+          const rtlStyle = convert({ [prop]: value });
 
           const convertedRule = Object.keys(rtlStyle)[0];
 
-          if (convertedRule !== _prop) {
-            rule.prop(_prop, null, { process: true });
+          if (convertedRule !== prop) {
+            rule.prop(prop, null, { process: true });
             rule.prop(convertedRule, value, { process: true });
           }
         }

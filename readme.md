@@ -18,13 +18,12 @@ raw styles.
 You can install this package with the following command:
 
 ```sh
-npm install jss-rtl
+npm install jss-rtl-mui
 ```
 
 ## Examples
 
 These examples will give you a brief overview of how this library is used:
-
 
 ### Simple Usage
 
@@ -32,7 +31,7 @@ You can use `jss.use(...)` to augment the global `jss` instance.
 
 ```javascript
 import jss from 'jss';
-import rtl from 'jss-rtl';
+import rtl from 'jss-rtl-mui';
 
 jss.use(rtl());
 
@@ -42,7 +41,7 @@ const styles = {
     'margin-right': '2px',
   },
   bar: {
-    'transform': 'translate3d(30%, 20%, 10%)',
+    transform: 'translate3d(30%, 20%, 10%)',
   },
   baz: {
     flip: false, // opt-out of conversion for a specific rule-set
@@ -69,7 +68,7 @@ Or you can use the `jss-preset-default` library and append this one to the end.
 ```javascript
 import { create } from 'jss';
 import preset from 'jss-preset-default';
-import rtl from 'jss-rtl';
+import rtl from 'jss-rtl-mui';
 
 const presets = preset().plugins;
 
@@ -147,7 +146,8 @@ It's also possible to change the default behavior to `opt-in`.
 jss.use(rtl({ opt: 'in' }));
 
 const styles = {
-  foo: { // This is ignored by the plugin
+  foo: {
+    // This is ignored by the plugin
     'padding-left': '2px',
     'margin-right': '2px',
   },
@@ -193,6 +193,3 @@ jss.createStyleSheet(styles, { flip: true }); /* =>
 ## Typings
 
 The typescript type definitions are also available and are installed via npm.
-
-## License
-This project is licensed under the [MIT license](https://github.com/alitaheri/jss-rtl/blob/master/LICENSE).

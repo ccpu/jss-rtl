@@ -6,7 +6,7 @@ import global from 'jss-plugin-global';
 import nested from 'jss-plugin-nested';
 import camelCase from 'jss-plugin-camel-case';
 
-describe('jss-rtl', () => {
+describe('jss-rtl-mui', () => {
   let jss: any;
 
   let orgConsoleError: any;
@@ -360,7 +360,7 @@ describe('jss-rtl', () => {
       expect(style).to.be.equals('body {  margin-right: 20;}a {  margin-right: 20;}');
     });
 
-    it('should handle multiple rule with function value', () => {
+    it('should handle rule with multiple function value', () => {
       const sheet = jss.createStyleSheet({
         ['standard']: {
           '& input': {

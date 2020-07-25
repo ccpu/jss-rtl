@@ -1,7 +1,7 @@
 {
   "name": "jss-rtl-mui",
   "description": "Flip styles using rtl-css-js",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "author": {
     "name": "Ali Taheri Moghaddar",
     "email": "ali.taheri.m@gmail.com"
@@ -18,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:ccpu/jss-rtl-v2.git"
+    "url": "git@github.com:ccpu/jss-rtl-mui.git"
   },
   "keywords": [
     "cssinjs",
