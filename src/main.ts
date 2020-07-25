@@ -8,10 +8,23 @@ export interface JssRTLOptions {
 }
 
 const getFuncKey = (rule: any, funcName: string) => {
-  const key = Object.keys(rule).find((key) => key.startsWith(funcName));
+  const keys = Object.keys(rule);
 
-  if (key && (Object.keys(rule[key]).length !== 0 || typeof rule[key] === 'function')) {
-    return key;
+  let fnKey;
+
+  for (let index = 0; index < keys.length; index++) {
+    const key = keys[index];
+    if (key.startsWith(funcName)) {
+      fnKey = key;
+      break;
+    }
+  }
+
+  if (
+    fnKey &&
+    (Object.keys(rule[fnKey]).length !== 0 || typeof rule[fnKey] === 'function')
+  ) {
+    return fnKey;
   }
 
   return undefined;
