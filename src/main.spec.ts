@@ -372,8 +372,23 @@ describe('jss-rtl-mui', () => {
       sheet.update({ valid: true });
       const style = sheet.toString().split('\n').join('');
       expect(style).to.be.equals(
-        '.standard-0-29-1 input {  margin-left: 6;  margin-right: 8;}',
+        '.standard-0-29-1 input {  margin-right: 8;  margin-left: 6;}',
       );
+    });
+
+    it('should handle rule with multiple function value and undefined value', () => {
+      const sheet = jss.createStyleSheet({
+        ['standard']: {
+          '& input': {
+            marginLeft: (p: any) => p.valid && undefined,
+            marginRight: (p: any) => p.valid && 6,
+            left: 6,
+          },
+        },
+      });
+      sheet.update({ valid: true });
+      const style = sheet.toString().split('\n').join('');
+      expect(style).to.be.equals('.standard-0-30-1 input {  right: 6;  margin-left: 6;}');
     });
   });
 });

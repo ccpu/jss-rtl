@@ -47,6 +47,9 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
         return style;
       }
 
+      const funcKey = getFunctionValueKey(rule);
+      if (funcKey && !style.flip) return style;
+
       if (!enabled) {
         if (typeof style.flip === 'boolean') {
           delete style.flip;
@@ -56,7 +59,6 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
       }
 
       if (process.env.NODE_ENV === 'development') {
-        const funcKey = getFunctionValueKey(rule);
         if (funcKey && typeof style.flip === 'boolean') {
           console.error(
             `[JSS-RTL-MUI] 'flip' option has no effect on the dynamic rules, to use 'flip' option with dynamic rules you must wrap the rules in a single function (JSS Function rules).`,
@@ -82,24 +84,11 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
       if (!fnValuesKey && !fnStyleKey) return;
 
       if (fnValuesKey) {
-        const fnValues = rule[fnValuesKey];
         let flip = shouldFlip(sheet, {}, opt);
 
         if (!flip) return;
 
-        for (var prop in fnValues) {
-          const value = fnValues[prop](data);
-
-          const rtlStyle = convert({ [prop]: value });
-
-          const convertedRule = Object.keys(rtlStyle)[0];
-
-          if (convertedRule !== prop) {
-            rule.prop(prop, null, { process: !fnValues[convertedRule] });
-            rule.prop(convertedRule, value, { process: true });
-          }
-        }
-        // rule.style = { ...rule.style, ...newStyle };
+        rule.style = { ...rule.style, flip: true };
       } else if (fnStyleKey) {
         const style = rule[fnStyleKey](data);
 
