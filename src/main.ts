@@ -95,7 +95,7 @@ export default function jssRTL({ enabled = true, opt = 'out' }: JssRTLOptions = 
           const convertedRule = Object.keys(rtlStyle)[0];
 
           if (convertedRule !== prop) {
-            rule.prop(prop, null, { process: true });
+            rule.prop(prop, null, { process: !fnValues[convertedRule] });
             rule.prop(convertedRule, value, { process: true });
           }
         }
